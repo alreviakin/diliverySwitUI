@@ -8,37 +8,38 @@
 import SwiftUI
 
 struct MainView: View {
+    
+    @ObservedObject var viewModel: MainViewModel = MainViewModel()
+    
     var body: some View {
-        NavigationStack {
-            VStack {
-                Image(systemName: "globe")
-                    .imageScale(.large)
-                    .foregroundColor(.accentColor)
-                Text("Hello, world!")
+        NavigationStack{
+            List {
+                ForEach(viewModel.categories) { category in
+                    NavigationLink {
+                        Category(viewModel: CategoryViewModel())
+                    } label: {
+                        let cellViewModel = viewModel.getCellViewModel(for: category.id - 1)
+                        MainCell(viewModel: cellViewModel)
+                    }
+                    .listRowSeparator(.hidden)
+                }
             }
-            .padding()
+            .scrollContentBackground(.hidden)
+            .listStyle(.inset)
+            .navigationBarTitleDisplayMode(.inline)
+            
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    HStack {
-                        locationView
-                            .frame(alignment: .leading)
-                    }
+                    MainLeadingBar()
                 }
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItem( placement: .navigationBarTrailing) {
                     Image("person")
                         .resizable()
-                        .frame(
-                            width: 44,
-                            height: 44
-                        )
-                        .aspectRatio(contentMode: .fill)
-                        .cornerRadius(22)
-                        .clipped()
-                        .listRowInsets(EdgeInsets())
+                        .frame(width: 44, height: 44)
+                        .clipShape(Circle())
                 }
             }
         }
-        
     }
 }
 
@@ -48,28 +49,3 @@ struct ContentView_Previews: PreviewProvider {
     }
 }
 
-
-extension MainView {
-    var locationView: some View {
-        HStack(alignment: .top) {
-            Image("location")
-            VStack(alignment: .leading) {
-                Text("Санкт-Петербург")
-                    .font(
-                        .system(
-                            size: 18,
-                            weight: .medium
-                        )
-                    )
-                    .multilineTextAlignment(.leading)
-                Text("12 aug 2023")
-                    .font(.system(size: 14, weight: .regular))
-                    .foregroundColor(
-                        Color(
-                            hexString: "#000000")
-                    )
-                    .opacity(0.5)
-            }
-        }
-    }
-}
